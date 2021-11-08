@@ -1,0 +1,16 @@
+{
+  "name": "monorepo-cn",
+  "version": "1.0.0",
+  "main": "index.js",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  },
+  "author": "Marta Pimentel <martapmalafaia@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    
+  }
+}
