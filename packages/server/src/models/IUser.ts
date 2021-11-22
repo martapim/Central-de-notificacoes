@@ -1,4 +1,6 @@
 export interface IUser {
-  name: string
-  admin: boolean
+  name: string;
+  email: string;
+  password: string;
+  role: "admin" | "consumer";
 }

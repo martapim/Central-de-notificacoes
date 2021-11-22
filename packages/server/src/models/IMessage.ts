@@ -1,5 +1,7 @@
 export interface IMessage {
-  title: string
-  description: string
-  read: boolean
+  title: string;
+  description: string;
+  Status: boolean;
+  user: string;
+  createdAt: Date;
 }
