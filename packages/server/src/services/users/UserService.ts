@@ -8,26 +8,14 @@ class UserService implements IUserService {
     this.userRepository = userRepository;
   }
 
-  async getAllUser() {
+  async getAllUser(): Promise<IUser[] | null> {
     const users = this.userRepository.getAllUser();
     return users;
   }
 
-  getUserById(id: string) {
+  async getUserById(id: string): Promise<IUser | null> {
     const user = this.userRepository.getUserById(id);
     return user;
-  }
-
-  async createUser(user: IUser, id: string) {
-    this.userRepository.createUser(user, id);
-  }
-
-  async deleteUser(id: string) {
-    this.userRepository.deleteUser(id);
-  }
-
-  async updateUser(user: IUser, id: string) {
-    this.userRepository.updateUser(user, id);
   }
 }
 

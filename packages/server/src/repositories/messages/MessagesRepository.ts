@@ -1,47 +1,56 @@
 import {
   collection,
-  deleteDoc,
+  CollectionReference,
   doc,
   Firestore,
+  getDoc,
   getDocs,
   query,
-  setDoc,
-  updateDoc,
   where,
 } from "firebase/firestore/lite";
 
 import { IMessage } from "../../models/IMessage";
+import { IMessageRepository } from "./IMessageRepository";
 
-export class MessagesRepository {
+class MessagesRepository implements IMessageRepository {
   private db: Firestore;
+  private messagesCol: CollectionReference<Omit<IMessage, "id">>;
 
   constructor(db: Firestore) {
     this.db = db;
+    this.messagesCol = collection(this.db, "messages") as CollectionReference<
+      Omit<IMessage, "id">
+    >;
   }
 
-  async getAllMessage() {
-    const messagesCol = collection(this.db, "messages");
-    const messagesSnapshot = await getDocs(messagesCol);
-    const messagesList = messagesSnapshot.docs.map(doc => doc.data());
+  async getMessageById(id: string): Promise<IMessage | null> {
+    const messageDocRef = doc(this.messagesCol, id);
+    const messageDoc = await getDoc(messageDocRef);
+
+    if (!messageDoc.data()) return null;
+    return { id: messageDoc.id, ...messageDoc.data()! };
+  }
+
+  async getAllMessage(): Promise<IMessage[] | null> {
+    const messagesSnapshot = await getDocs(this.messagesCol);
+    const messagesList = messagesSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
     return messagesList;
   }
 
-  getMessageById(id: string) {
-    const messageRef = collection(this.db, "messages");
-    const message = query(messageRef, where("id", "==", id));
-    return message;
-  }
+  async getAllMessageByUserId(userId: string): Promise<IMessage[] | null> {
+    const userQuery = query(this.messagesCol, where("userId", "==", userId));
+    const messagesSnapshot = await getDocs(userQuery);
 
-  async createMessage(message: IMessage, id: string) {
-    await setDoc(doc(this.db, "messages", id), message);
-  }
+    const messagesList = messagesSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
 
-  async deleteMessage(id: string) {
-    await deleteDoc(doc(this.db, "messages", id));
-  }
-
-  async updateMessage(message: IMessage, id: string) {
-    const messageRef = doc(this.db, "messages", id);
-    await updateDoc(messageRef, { ...message });
+    return messagesList;
   }
 }
+
+export { MessagesRepository };

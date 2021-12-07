@@ -1,10 +1,5 @@
 import { initializeApp } from "firebase/app";
-import {
-  collection,
-  Firestore,
-  getDocs,
-  getFirestore,
-} from "firebase/firestore/lite";
+import { getFirestore } from "firebase/firestore/lite";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA8oZ6MEUqhX9aZ2PhFcWDE1zV1kGINDVw",
@@ -18,11 +13,4 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-async function getAllUser(db: Firestore) {
-  const usersCol = collection(db, "users");
-  const usersSnapshot = await getDocs(usersCol);
-  const usersList = usersSnapshot.docs.map(doc => doc.data());
-  return usersList;
-}
-
-export { db, getAllUser };
+export { db };

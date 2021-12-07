@@ -1,0 +1,25 @@
+input MessageInput {
+  id: String
+  title: String
+  description: String
+  userId: String
+}
+
+type Message {
+  id: String
+  title: String
+  description: String
+  userId: String
+}
+
+type Query {
+  messages: [Message]
+  message(id: String): Message
+  messageUserId(userId: String): [Message]
+}
+
+type Mutation {
+  createMessage(data: MessageInput): Message
+  deleteMessage(id: String): Boolean
+  updateMessage(data: MessageInput, id: String): Message
+}

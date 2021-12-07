@@ -1,11 +1,10 @@
 import {
   collection,
-  deleteDoc,
+  CollectionReference,
   doc,
   Firestore,
+  getDoc,
   getDocs,
-  setDoc,
-  updateDoc,
 } from "firebase/firestore/lite";
 
 import { IUser } from "../../models/IUser";
@@ -13,35 +12,34 @@ import { IUserRepository } from "./IUserRepository";
 
 class UsersRepository implements IUserRepository {
   private db: Firestore;
+  private usersCol: CollectionReference<Omit<IUser, "id">>;
 
   constructor(db: Firestore) {
     this.db = db;
+    this.usersCol = collection(this.db, "users") as CollectionReference<
+      Omit<IUser, "id">
+    >;
   }
 
-  async getAllUser(): Promise<IUser[]> {
-    const usersCol = collection(this.db, "users");
-    const usersSnapshot = await getDocs(usersCol);
-    const usersList = usersSnapshot.docs.map(doc => doc.data() as IUser);
+  async getAllUser(): Promise<IUser[] | null> {
+    const userDocRef = await getDocs(this.usersCol);
+
+    if (!userDocRef) return null;
+    const usersList = userDocRef.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
     return usersList;
   }
 
-  // getUserById(id: string) {
-  //   const userRef = collection(this.db, "users");
-  //   const user = query(userRef, where("id", "==", id));
-  //   return user;
-  // }
+  async getUserById(id: string): Promise<IUser | null> {
+    const userDocRef = doc(this.usersCol, id);
+    const userDoc = await getDoc(userDocRef);
 
-  async createUser(user: IUser, id: string) {
-    await setDoc(doc(this.db, "users", id), user);
-  }
-
-  async deleteUser(id: string) {
-    await deleteDoc(doc(this.db, "users", id));
-  }
-
-  async updateUser(user: IUser, id: string) {
-    const userRef = doc(this.db, "users", id);
-    await updateDoc(userRef, { ...user });
+    if (!userDoc.data()) return null;
+    return { id: userDoc.id, ...userDoc.data()! };
   }
 }
+
 export { UsersRepository };

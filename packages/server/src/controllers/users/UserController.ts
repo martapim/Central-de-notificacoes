@@ -12,10 +12,22 @@ class UserController {
     return users;
   }
 
-  getUserById(id: string) {
+  async getUserById(id: string) {
     const user = this.userService.getUserById(id);
     return user;
   }
+
+  // async createUser(user: IUser, id: string): Promise<void> {
+  //   this.userService.createUser(user, id);
+  // }
+
+  // async updateUser(user: IUser, id: string): Promise<void> {
+  //   this.userService.updateUser(user, id);
+  // }
+
+  // async deleteUser(id: string): Promise<void> {
+  //   this.userService.deleteUser(id);
+  // }
 }
 
 export { UserController };
